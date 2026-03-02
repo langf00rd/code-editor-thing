@@ -1,15 +1,19 @@
 interface Theme {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 interface ThemeSelectorProps {
-  themes: Theme[]
-  selectedTheme: string
-  onThemeChange: (theme: string) => void
+  themes: Theme[];
+  selectedTheme: string;
+  onThemeChange: (theme: string) => void;
 }
 
-export default function ThemeSelector({ themes, selectedTheme, onThemeChange }: ThemeSelectorProps) {
+export default function ThemeSelector({
+  themes,
+  selectedTheme,
+  onThemeChange,
+}: ThemeSelectorProps) {
   return (
     <div className="flex items-center gap-2 px-2 py-1">
       <span className="text-[12px] text-[#bbbbbb]">Theme:</span>
@@ -25,5 +29,5 @@ export default function ThemeSelector({ themes, selectedTheme, onThemeChange }: 
         ))}
       </select>
     </div>
-  )
+  );
 }

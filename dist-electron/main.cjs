@@ -26,10 +26,10 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var import_electron = require("electron");
 var import_path = __toESM(require("path"), 1);
 var import_fs = __toESM(require("fs"), 1);
-var import_child_process = require("child_process");
+var pty = __toESM(require("node-pty"), 1);
 var mainWindow = null;
 var currentFolder = null;
-var shell = null;
+var ptyProcess = null;
 var VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL || "http://localhost:5173";
 var APP_PATH = import_electron.app.getAppPath();
 function createWindow() {
@@ -54,6 +54,12 @@ function createWindow() {
   mainWindow.webContents.on("crashed", () => {
     console.error("Renderer process crashed");
   });
+  import_electron.globalShortcut.register("Command+B", () => {
+    mainWindow?.webContents.send("toggle-sidebar");
+  });
+  import_electron.globalShortcut.register("Command+Shift+T", () => {
+    mainWindow?.webContents.send("toggle-terminal");
+  });
   createMenu();
 }
 function createMenu() {
@@ -75,12 +81,12 @@ function createMenu() {
       submenu: [
         {
           label: "Toggle Sidebar",
-          accelerator: "CmdOrCtrl+B",
+          accelerator: "Command+B",
           click: () => mainWindow?.webContents.send("toggle-sidebar")
         },
         {
           label: "Toggle Terminal",
-          accelerator: "CmdOrCtrl+`",
+          accelerator: "Command+Shift+T",
           click: () => mainWindow?.webContents.send("toggle-terminal")
         },
         { type: "separator" },
@@ -137,21 +143,24 @@ import_electron.ipcMain.handle("save-file", async (_event, filePath, content) =>
 });
 import_electron.ipcMain.handle("get-folder", () => currentFolder);
 import_electron.ipcMain.on("create-terminal", (event) => {
-  const shellPath = process.platform === "win32" ? "cmd.exe" : process.env.SHELL || "/bin/bash";
-  shell = (0, import_child_process.spawn)(shellPath, [], { shell: true });
-  shell.stdout.on("data", (data) => {
-    event.sender.send("terminal-data", data.toString());
+  const shellPath = process.platform === "win32" ? "powershell.exe" : process.env.SHELL || "/bin/zsh";
+  ptyProcess = pty.spawn(shellPath, [], {
+    name: "xterm-256color",
+    cols: 80,
+    rows: 30,
+    cwd: process.env.HOME || process.cwd(),
+    env: process.env
   });
-  shell.stderr.on("data", (data) => {
-    event.sender.send("terminal-data", data.toString());
+  ptyProcess.onData((data) => {
+    event.sender.send("terminal-data", data);
   });
-  shell.on("close", () => {
-    shell = null;
+  ptyProcess.onExit(() => {
+    ptyProcess = null;
   });
 });
 import_electron.ipcMain.on("terminal-input", (_event, data) => {
-  if (shell?.stdin) {
-    shell.stdin.write(data);
+  if (ptyProcess) {
+    ptyProcess.write(data);
   }
 });
 //# sourceMappingURL=main.cjs.map
