@@ -9,7 +9,7 @@ await esbuild.build({
   target: 'node18',
   outdir: 'dist-electron',
   format: 'cjs',
-  external: ['electron'],
+  external: ['electron', 'node-pty'],
   sourcemap: true,
   outExtension: { '.js': '.cjs' }
 })

@@ -158,7 +158,7 @@ function App() {
         onCloseTab={handleCloseTab}
         onContentChange={handleContentChange}
       />
-       {/* <Terminal /> */}
+      <Terminal />
       </div>
       {/* 
       <ThemeSelector
