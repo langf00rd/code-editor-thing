@@ -276,10 +276,11 @@ export default function Editor() {
       <div className="relative flex-1 overflow-hidden">
         <div
           ref={highlightRef}
-          className="absolute inset-0 p-4 text-sm whitespace-pre-wrap break-words overflow-auto pointer-events-none"
+          className="absolute inset-0 p-4 text-sm whitespace-pre-wrap text-[12px] break-words overflow-auto pointer-events-none"
           style={{
             backgroundColor: themeStyle.bg,
             color: themeStyle.fg,
+            fontFamily: themeStyle.fontFamily,
           }}
           dangerouslySetInnerHTML={{ __html: highlighted || "&nbsp;" }}
         />
@@ -288,7 +289,8 @@ export default function Editor() {
           value={content}
           onChange={handleChange}
           onScroll={handleScroll}
-          className="absolute inset-0 w-full h-full p-4 resize-none outline-none text-sm whitespace-pre-wrap break-words bg-transparent text-transparent caret-white"
+          className="absolute inset-0 w-full h-full p-4 resize-none outline-none text-[12px] whitespace-pre-wrap break-words bg-transparent text-transparent caret-white"
+          style={{ fontFamily: themeStyle.fontFamily }}
           spellCheck={false}
         />
       </div>
