@@ -55,11 +55,11 @@ export default function Sidebar() {
   const { fileTree, selectedTheme, setSelectedTheme } = useEditor();
 
   return (
-    <div className="h-full p-1 py-2 bg-neutral-100 border-r w-[240px]">
+    <div className="h-full relative p-1 py-2 bg-neutral-100 border-r w-[240px]">
       {fileTree.map((item) => (
         <TreeItem key={item.path} item={item} level={0} />
       ))}
-      <div className="h-6 border-t">
+      <div className="h-6 fixed bottom-2 left-0 border-t">
         <ThemeSelector
           themes={THEMES}
           selectedTheme={selectedTheme}
