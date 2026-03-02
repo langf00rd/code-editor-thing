@@ -10,7 +10,7 @@ interface TreeItemProps {
 function TreeItem({ item, level }: TreeItemProps) {
   const [expanded, setExpanded] = useState(false);
   const [children, setChildren] = useState<FileItem[]>([]);
-  const { handleFileSelect } = useEditor();
+  const { handleFileSelect, currentTheme } = useEditor();
 
   const handleClick = async () => {
     if (item.isDirectory) {
@@ -29,10 +29,14 @@ function TreeItem({ item, level }: TreeItemProps) {
   return (
     <div>
       <div
-        className={`flex h-7 items-center cursor-pointer hover:bg-neutral-100 ${
-          item.isDirectory ? "text-[#000]" : "text-black/50"
-        }`}
-        style={{ paddingLeft: `${10 + level * 15}px` }}
+        className="flex h-7 items-center cursor-pointer"
+        style={{
+          paddingLeft: `${10 + level * 15}px`,
+          color: item.isDirectory
+            ? currentTheme.sidebar.fg
+            : `${currentTheme.sidebar.fg}80`,
+          backgroundColor: "transparent",
+        }}
         onClick={handleClick}
       >
         <span className="mr-1">
@@ -52,10 +56,16 @@ function TreeItem({ item, level }: TreeItemProps) {
 }
 
 export default function Sidebar() {
-  const { fileTree } = useEditor();
+  const { fileTree, currentTheme } = useEditor();
 
   return (
-    <div className="h-full relative p-1 py-2 bg-neutral-100 border-r w-[240px]">
+    <div
+      className="h-full relative p-1 py-2 w-[240px]"
+      style={{
+        backgroundColor: currentTheme.sidebar.bg,
+        color: currentTheme.sidebar.fg,
+      }}
+    >
       {fileTree.map((item) => (
         <TreeItem key={item.path} item={item} level={0} />
       ))}

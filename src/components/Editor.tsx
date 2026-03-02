@@ -10,7 +10,6 @@ import "prismjs/components/prism-rust";
 import "prismjs/components/prism-typescript";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useEditor } from "../lib/editor-context";
-import { THEME_STYLES } from "../lib/themes";
 import type { OpenFile } from "../lib/types";
 
 interface OpenFilesListProps {
@@ -180,7 +179,7 @@ export default function Editor() {
     setActiveFilePath,
     handleCloseTab,
     handleContentChange,
-    selectedTheme,
+    currentTheme,
   } = useEditor();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [activeFile, setActiveFile] = useState<OpenFile | null>(null);
@@ -196,12 +195,12 @@ export default function Editor() {
   }, [activeFilePath, openFiles]);
 
   const themeStyle = useMemo(() => {
-    return THEME_STYLES[selectedTheme] || THEME_STYLES["vs-dark"];
-  }, [selectedTheme]);
+    return currentTheme.editor;
+  }, [currentTheme]);
 
   const colors = useMemo(() => {
-    return THEME_COLORS[selectedTheme] || THEME_COLORS["vs-dark"];
-  }, [selectedTheme]);
+    return THEME_COLORS[currentTheme.id] || THEME_COLORS["vs-dark"];
+  }, [currentTheme.id]);
 
   const highlighted = useMemo(() => {
     if (!content) return "";
@@ -277,12 +276,10 @@ export default function Editor() {
       <div className="relative flex-1 overflow-hidden">
         <div
           ref={highlightRef}
-          className="absolute inset-0 p-4 font-mono text-sm whitespace-pre-wrap break-words overflow-auto pointer-events-none"
+          className="absolute inset-0 p-4 text-sm whitespace-pre-wrap break-words overflow-auto pointer-events-none"
           style={{
             backgroundColor: themeStyle.bg,
             color: themeStyle.fg,
-            fontFamily:
-              themeStyle.fontFamily || "Consolas, 'Courier New', monospace",
           }}
           dangerouslySetInnerHTML={{ __html: highlighted || "&nbsp;" }}
         />
@@ -291,11 +288,7 @@ export default function Editor() {
           value={content}
           onChange={handleChange}
           onScroll={handleScroll}
-          className="absolute inset-0 w-full h-full p-4 resize-none outline-none font-mono text-sm whitespace-pre-wrap break-words bg-transparent text-transparent caret-white"
-          style={{
-            fontFamily:
-              themeStyle.fontFamily || "Consolas, 'Courier New', monospace",
-          }}
+          className="absolute inset-0 w-full h-full p-4 resize-none outline-none text-sm whitespace-pre-wrap break-words bg-transparent text-transparent caret-white"
           spellCheck={false}
         />
       </div>

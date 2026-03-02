@@ -3,11 +3,13 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
   type ReactNode,
 } from "react";
 import type { FileItem } from "../../electron/preload";
 import type { OpenFile } from "./types";
+import { getTheme, type Theme } from "./themes";
 
 interface EditorContextType {
   sidebarVisible: boolean;
@@ -24,6 +26,7 @@ interface EditorContextType {
   setCurrentFolder: (v: string | null) => void;
   selectedTheme: string;
   setSelectedTheme: (v: string) => void;
+  currentTheme: Theme;
   isElectron: boolean;
   handleFileSelect: (item: FileItem) => Promise<void>;
   handleContentChange: (content: string) => void;
@@ -43,6 +46,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const [currentFolder, setCurrentFolder] = useState<string | null>(null);
   const [selectedTheme, setSelectedTheme] = useState("vs-dark");
   const [isElectron, setIsElectron] = useState(false);
+
+  const currentTheme = useMemo(() => getTheme(selectedTheme), [selectedTheme]);
 
   useEffect(() => {
     setIsElectron(!!window.electronAPI);
@@ -159,6 +164,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         setCurrentFolder,
         selectedTheme,
         setSelectedTheme,
+        currentTheme,
         isElectron,
         handleFileSelect,
         handleContentChange,
