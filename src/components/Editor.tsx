@@ -1,12 +1,7 @@
-import { useEffect, useRef, useState, useMemo } from 'react'
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react'
 import type { OpenFile } from '../App'
-import Prism from 'prismjs'
-import 'prismjs/components/prism-typescript'
-import 'prismjs/components/prism-javascript'
-import 'prismjs/components/prism-json'
-import 'prismjs/components/prism-css'
-import 'prismjs/components/prism-markup'
-import 'prismjs/themes/prism-tomorrow.css'
+import MonacoEditor from '@monaco-editor/react'
+import type { editor } from 'monaco-editor'
 
 interface EditorProps {
   openFiles: OpenFile[]
@@ -30,9 +25,11 @@ function getLanguageFromPath(path: string): string {
     case 'css':
       return 'css'
     case 'html':
-      return 'markup'
+      return 'html'
+    case 'md':
+      return 'markdown'
     default:
-      return 'clike'
+      return 'plaintext'
   }
 }
 
@@ -43,8 +40,7 @@ export default function Editor({
   onCloseTab,
   onContentChange
 }: EditorProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const highlightRef = useRef<HTMLPreElement>(null)
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
   const [activeFile, setActiveFile] = useState<OpenFile | null>(null)
 
   useEffect(() => {
@@ -53,32 +49,36 @@ export default function Editor({
   }, [activeFilePath, openFiles])
 
   const language = useMemo(() => {
-    if (!activeFile) return 'clike'
+    if (!activeFile) return 'plaintext'
     return getLanguageFromPath(activeFile.path)
   }, [activeFile])
 
-  const highlightedCode = useMemo(() => {
-    if (!activeFile) return ''
-    const grammar = Prism.languages[language] || Prism.languages.clike
-    return Prism.highlight(activeFile.content, grammar, language)
-  }, [activeFile, language])
+  const handleEditorMount = useCallback((editor: editor.IStandaloneCodeEditor) => {
+    editorRef.current = editor
+  }, [])
+
+  const handleChange = useCallback((value: string | undefined) => {
+    if (value !== undefined) {
+      onContentChange(value)
+    }
+  }, [onContentChange])
 
   return (
-    <div className="w-[80vw] h-full flex-1 flex flex-col">
+    <div className="w-full h-[80vh] flex-1 flex flex-col">
       {openFiles.length > 0 && (
-        <div className="flex h-[35px] border-b">
+        <div className="flex h-[32px] border-b">
           {openFiles.map((file) => (
             <div
               key={file.path}
-              className={`flex items-center gap-2 px-3 py-2 cursor-pointer ${
-                file.path === activeFilePath ? 'bg-[#1e1e1e] text-white' : ''
-              } hover:bg-black hover:text-white`}
+              className={`flex items-center gap-2 px-3 cursor-pointer ${
+                file.path === activeFilePath ? 'bg-neutral-200' : ''
+              } hover:bg-neutral-300`}
               onClick={() => onTabClick(file.path)}
             >
-              <span className='whitespace-nowrap'>
+              <p className='whitespace-nowrap text-[12px]'>
                 {file.name}
                 {file.modified && <span className="text-[#569cd6]"> ●</span>}
-              </span>
+              </p>
               <span
                 className="opacity-60 hover:opacity-100"
                 onClick={(e) => {
@@ -98,23 +98,22 @@ export default function Editor({
           Open a folder (File → Open Folder or Ctrl+O)
         </div>
       ) : activeFile ? (
-        <div className="relative flex-1 w-full h-full font-mono">
-          <pre
-            ref={highlightRef}
-            className="absolute inset-0 p-2.5 text-[12px] overflow-auto pointer-events-none"
-            dangerouslySetInnerHTML={{ __html: highlightedCode }}
-          />
-          <textarea
-            ref={textareaRef}
-            spellCheck={false}
-            className="absolute inset-0 bg-transparent text-transparent caret-white resize-none outline-none overflow-auto"
+        <div className="w-full h-full">
+          <MonacoEditor
+            height="100%"
+            language={language}
             value={activeFile.content}
-            onChange={(e) => onContentChange(e.target.value)}
-            onScroll={(e) => {
-              if (highlightRef.current) {
-                highlightRef.current.scrollTop = e.currentTarget.scrollTop
-                highlightRef.current.scrollLeft = e.currentTarget.scrollLeft
-              }
+            onChange={handleChange}
+            onMount={handleEditorMount}
+            // theme="vs-dark"
+            options={{
+              fontSize: 12,
+              minimap: { enabled: false },
+              scrollBeyondLastLine: false,
+              wordWrap: 'on',
+              automaticLayout: true,
+              tabSize: 2,
+              padding: { top: 10 }
             }}
           />
         </div>

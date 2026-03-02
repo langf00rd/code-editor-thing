@@ -6,9 +6,10 @@ interface TreeItemProps {
   level: number
   onFileSelect: (item: FileItem) => void
   onRefresh: (folderPath: string) => void
+  currentFolder:string
 }
 
-function TreeItem({ item, level, onFileSelect, onRefresh }: TreeItemProps) {
+function TreeItem({ item, level, onFileSelect, onRefresh, currentFolder }: TreeItemProps) {
   const [expanded, setExpanded] = useState(false)
   const [children, setChildren] = useState<FileItem[]>([])
 
@@ -27,19 +28,19 @@ function TreeItem({ item, level, onFileSelect, onRefresh }: TreeItemProps) {
   return (
     <div>
       <div
-        className={`flex p-1 items-center cursor-pointer hover:bg-neutral-100 ${
+        className={`flex h-7 items-center cursor-pointer hover:bg-neutral-100 ${
           item.isDirectory ? 'text-[#000]' : 'text-black/50'
         }`}
         style={{ paddingLeft: `${10 + level * 15}px` }}
         onClick={handleClick}
       >
-        <span className="mr-1 text-[10px]">
+        <span className="mr-1">
           {item.isDirectory ? (expanded ? '-' : '+') : ''}
         </span>
-        <span>{item.name}</span>
+        <span className='text-[12px] whitespace-nowrap'>{item.name}</span>
       </div>
       {expanded && item.isDirectory && (
-        <div>
+        <>
           {children.map((child) => (
             <TreeItem
               key={child.path}
@@ -49,7 +50,7 @@ function TreeItem({ item, level, onFileSelect, onRefresh }: TreeItemProps) {
               onRefresh={onRefresh}
             />
           ))}
-        </div>
+        </>
       )}
     </div>
   )
@@ -64,7 +65,7 @@ interface SidebarProps {
 
 export default function Sidebar({ fileTree, onFileSelect, onRefresh }: SidebarProps) {
   return (
-   <div className="h-full border-r w-[20vw]">
+   <div className="h-full p-1 py-2 border-r w-[14vw]">
         {fileTree.map((item) => (
           <TreeItem
             key={item.path}

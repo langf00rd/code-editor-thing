@@ -150,14 +150,16 @@ function App() {
           currentFolder={currentFolder}
         />
       )}
-      <Editor
+      <div className='h-full flex flex-col w-full'>
+        <Editor
         openFiles={openFiles}
         activeFilePath={activeFilePath}
         onTabClick={setActiveFilePath}
         onCloseTab={handleCloseTab}
         onContentChange={handleContentChange}
-        theme={selectedTheme}
       />
+       {/* <Terminal /> */}
+      </div>
       {/* 
       <ThemeSelector
         themes={THEMES}

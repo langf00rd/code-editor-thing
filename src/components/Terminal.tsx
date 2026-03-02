@@ -10,12 +10,15 @@ export default function Terminal() {
   useEffect(() => {
     if (!terminalRef.current) return
 
+    terminalRef.current.focus()
+
     const term = new XTerm({
       cursorBlink: true,
       fontSize: 13,
       fontFamily: 'Monaco, Menlo, Courier New, monospace',
       theme: { background: '#1e1e1e', foreground: '#d4d4d4' }
     })
+
     const fitAddon = new FitAddon()
     term.loadAddon(fitAddon)
     term.open(terminalRef.current)
@@ -34,26 +37,22 @@ export default function Terminal() {
     }
 
     term.onData((data) => {
+      console.log('term data',data)
       if (window.electronAPI?.terminalInput) {
         window.electronAPI.terminalInput(data)
       }
     })
 
-    const handleResize = () => fitAddon.fit()
-    window.addEventListener('resize', handleResize)
-
-    return () => {
-      window.removeEventListener('resize', handleResize)
-      term.dispose()
-    }
+    
+    // const handleResize = () => fitAddon.fit()
+    // window.addEventListener('resize', handleResize)
+    // return () => {
+    //   window.removeEventListener('resize', handleResize)
+    //   term.dispose()
+    // }
   }, [])
 
   return (
-    <div className="h-[30vh] bg-red-400 border-t border-[#3c3c3c] flex flex-col">
-      <div className="px-2.5 py-1 bg-[#252526] text-[12px] border-b border-[#3c3c3c] flex justify-between">
-        <span>Terminal</span>
-      </div>
-      <div ref={terminalRef} className="flex-1 p-1" />
-    </div>
+        <div className='w-full h-full h-full' ref={terminalRef}   />
   )
 }
