@@ -41,7 +41,7 @@ function App() {
 
   useEffect(() => {
     setIsElectron(!!window.electronAPI)
-    
+
     if (window.electronAPI) {
       window.electronAPI.onFolderOpened(async (folderPath) => {
         setCurrentFolder(folderPath)
@@ -141,7 +141,7 @@ function App() {
   }
 
   return (
-    <div className="flex h-screen bg-[#1e1e1e] text-[#d4d4d4]">
+    <div className='flex h-screen'>
       {sidebarVisible && (
         <Sidebar
           fileTree={fileTree}
@@ -150,26 +150,21 @@ function App() {
           currentFolder={currentFolder}
         />
       )}
-      <div className="flex flex-col flex-1 overflow-hidden">
-        <div className="flex items-center bg-[#252526] border-b border-[#3c3c3c]">
-          <div className="flex-1">
-            <Editor
-              openFiles={openFiles}
-              activeFilePath={activeFilePath}
-              onTabClick={setActiveFilePath}
-              onCloseTab={handleCloseTab}
-              onContentChange={handleContentChange}
-              theme={selectedTheme}
-            />
-          </div>
-          <ThemeSelector
-            themes={THEMES}
-            selectedTheme={selectedTheme}
-            onThemeChange={setSelectedTheme}
-          />
-        </div>
-        {terminalVisible && <Terminal />}
-      </div>
+      <Editor
+        openFiles={openFiles}
+        activeFilePath={activeFilePath}
+        onTabClick={setActiveFilePath}
+        onCloseTab={handleCloseTab}
+        onContentChange={handleContentChange}
+        theme={selectedTheme}
+      />
+      {/* 
+      <ThemeSelector
+        themes={THEMES}
+        selectedTheme={selectedTheme}
+        onThemeChange={setSelectedTheme}
+      />
+      {terminalVisible && <Terminal />} */}
     </div>
   )
 }

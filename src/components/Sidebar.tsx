@@ -27,14 +27,14 @@ function TreeItem({ item, level, onFileSelect, onRefresh }: TreeItemProps) {
   return (
     <div>
       <div
-        className={`flex items-center py-1 px-2.5 cursor-pointer text-[13px] hover:bg-[#2a2d2e] ${
-          item.isDirectory ? 'text-[#e8ab6b]' : 'text-[#d4d4d4]'
+        className={`flex p-1 items-center cursor-pointer hover:bg-neutral-100 ${
+          item.isDirectory ? 'text-[#000]' : 'text-black/50'
         }`}
         style={{ paddingLeft: `${10 + level * 15}px` }}
         onClick={handleClick}
       >
-        <span className="mr-1.5 text-[10px]">
-          {item.isDirectory ? (expanded ? '📂' : '📁') : '📄'}
+        <span className="mr-1 text-[10px]">
+          {item.isDirectory ? (expanded ? '-' : '+') : ''}
         </span>
         <span>{item.name}</span>
       </div>
@@ -62,13 +62,9 @@ interface SidebarProps {
   currentFolder: string | null
 }
 
-export default function Sidebar({ fileTree, onFileSelect, onRefresh, currentFolder }: SidebarProps) {
+export default function Sidebar({ fileTree, onFileSelect, onRefresh }: SidebarProps) {
   return (
-    <div className="w-[250px] bg-[#252526] border-r border-[#3c3c3c] flex flex-col overflow-hidden">
-      <div className="px-2.5 py-2.5 text-[11px] font-semibold uppercase text-[#bbbbbb] border-b border-[#3c3c3c]">
-        Explorer
-      </div>
-      <div className="flex-1 overflow-auto py-1">
+   <div className="h-full border-r w-[20vw]">
         {fileTree.map((item) => (
           <TreeItem
             key={item.path}
@@ -79,6 +75,5 @@ export default function Sidebar({ fileTree, onFileSelect, onRefresh, currentFold
           />
         ))}
       </div>
-    </div>
   )
 }

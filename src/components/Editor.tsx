@@ -1,5 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import type { OpenFile } from '../App'
+import Prism from 'prismjs'
+import 'prismjs/components/prism-typescript'
+import 'prismjs/components/prism-javascript'
+import 'prismjs/components/prism-json'
+import 'prismjs/components/prism-css'
+import 'prismjs/components/prism-markup'
+import 'prismjs/themes/prism-tomorrow.css'
 
 interface EditorProps {
   openFiles: OpenFile[]
@@ -7,6 +14,26 @@ interface EditorProps {
   onTabClick: (path: string) => void
   onCloseTab: (path: string) => void
   onContentChange: (content: string) => void
+}
+
+function getLanguageFromPath(path: string): string {
+  const ext = path.split('.').pop()?.toLowerCase()
+  switch (ext) {
+    case 'ts':
+    case 'tsx':
+      return 'typescript'
+    case 'js':
+    case 'jsx':
+      return 'javascript'
+    case 'json':
+      return 'json'
+    case 'css':
+      return 'css'
+    case 'html':
+      return 'markup'
+    default:
+      return 'clike'
+  }
 }
 
 export default function Editor({
@@ -17,6 +44,7 @@ export default function Editor({
   onContentChange
 }: EditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const highlightRef = useRef<HTMLPreElement>(null)
   const [activeFile, setActiveFile] = useState<OpenFile | null>(null)
 
   useEffect(() => {
@@ -24,24 +52,35 @@ export default function Editor({
     setActiveFile(file || null)
   }, [activeFilePath, openFiles])
 
+  const language = useMemo(() => {
+    if (!activeFile) return 'clike'
+    return getLanguageFromPath(activeFile.path)
+  }, [activeFile])
+
+  const highlightedCode = useMemo(() => {
+    if (!activeFile) return ''
+    const grammar = Prism.languages[language] || Prism.languages.clike
+    return Prism.highlight(activeFile.content, grammar, language)
+  }, [activeFile, language])
+
   return (
-    <div className="flex flex-col flex-1 overflow-hidden bg-[#1e1e1e]">
+    <div className="w-[80vw] h-full flex-1 flex flex-col">
       {openFiles.length > 0 && (
-        <div className="flex bg-[#252526] border-b border-[#3c3c3c] min-h-[35px]">
+        <div className="flex h-[35px] border-b">
           {openFiles.map((file) => (
             <div
               key={file.path}
-              className={`flex items-center gap-2 px-3 py-2 cursor-pointer text-[13px] border-r border-[#1e1e1e] ${
-                file.path === activeFilePath ? 'bg-[#1e1e1e]' : 'bg-[#2d2d2d]'
-              } hover:bg-[#2a2d2e]`}
+              className={`flex items-center gap-2 px-3 py-2 cursor-pointer ${
+                file.path === activeFilePath ? 'bg-[#1e1e1e] text-white' : ''
+              } hover:bg-black hover:text-white`}
               onClick={() => onTabClick(file.path)}
             >
-              <span>
+              <span className='whitespace-nowrap'>
                 {file.name}
-                {file.modified && <span className="text-[#569cd6]">●</span>}
+                {file.modified && <span className="text-[#569cd6]"> ●</span>}
               </span>
               <span
-                className="text-[14px] opacity-60 hover:opacity-100"
+                className="opacity-60 hover:opacity-100"
                 onClick={(e) => {
                   e.stopPropagation()
                   onCloseTab(file.path)
@@ -53,18 +92,32 @@ export default function Editor({
           ))}
         </div>
       )}
+
       {openFiles.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center text-[#6a6a6a] text-lg">
+        <div className='text-center py-32'>
           Open a folder (File → Open Folder or Ctrl+O)
         </div>
       ) : activeFile ? (
-        <textarea
-          ref={textareaRef}
-          className="flex-1 w-full p-2.5 bg-[#1e1e1e] text-[#d4d4d4] border-none resize-none font-mono text-[14px] leading-[1.5] outline-none"
-          value={activeFile.content}
-          onChange={(e) => onContentChange(e.target.value)}
-          spellCheck={false}
-        />
+        <div className="relative flex-1 w-full h-full font-mono">
+          <pre
+            ref={highlightRef}
+            className="absolute inset-0 p-2.5 text-[12px] overflow-auto pointer-events-none"
+            dangerouslySetInnerHTML={{ __html: highlightedCode }}
+          />
+          <textarea
+            ref={textareaRef}
+            spellCheck={false}
+            className="absolute inset-0 bg-transparent text-transparent caret-white resize-none outline-none overflow-auto"
+            value={activeFile.content}
+            onChange={(e) => onContentChange(e.target.value)}
+            onScroll={(e) => {
+              if (highlightRef.current) {
+                highlightRef.current.scrollTop = e.currentTarget.scrollTop
+                highlightRef.current.scrollLeft = e.currentTarget.scrollLeft
+              }
+            }}
+          />
+        </div>
       ) : null}
     </div>
   )

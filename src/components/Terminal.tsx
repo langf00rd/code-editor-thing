@@ -49,7 +49,7 @@ export default function Terminal() {
   }, [])
 
   return (
-    <div className="h-[30vh] bg-[#1e1e1e] border-t border-[#3c3c3c] flex flex-col">
+    <div className="h-[30vh] bg-red-400 border-t border-[#3c3c3c] flex flex-col">
       <div className="px-2.5 py-1 bg-[#252526] text-[12px] border-b border-[#3c3c3c] flex justify-between">
         <span>Terminal</span>
       </div>
