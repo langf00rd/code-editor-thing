@@ -1,11 +1,11 @@
-import { app, BrowserWindow, ipcMain, dialog, Menu } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, Menu, globalShortcut } from 'electron'
 import path from 'path'
 import fs from 'fs'
-import { spawn } from 'child_process'
+import * as pty from 'node-pty'
 
 let mainWindow: BrowserWindow | null = null
 let currentFolder: string | null = null
-let shell: ReturnType<typeof spawn> | null = null
+let ptyProcess: pty.IPty | null = null
 
 const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL || 'http://localhost:5173'
 const APP_PATH = app.getAppPath()
@@ -36,6 +36,14 @@ function createWindow() {
     console.error('Renderer process crashed')
   })
 
+  globalShortcut.register('Command+B', () => { 
+    mainWindow?.webContents.send('toggle-sidebar')
+  })
+
+  globalShortcut.register('Command+Shift+T', () => { 
+    mainWindow?.webContents.send('toggle-terminal')
+  })
+
   createMenu()
 }
 
@@ -58,12 +66,12 @@ function createMenu() {
       submenu: [
         {
           label: 'Toggle Sidebar',
-          accelerator: 'CmdOrCtrl+B',
+          accelerator: 'Command+B',
           click: () => mainWindow?.webContents.send('toggle-sidebar')
         },
         {
           label: 'Toggle Terminal',
-          accelerator: 'CmdOrCtrl+`',
+          accelerator: 'Command+Shift+T',
           click: () => mainWindow?.webContents.send('toggle-terminal')
         },
         { type: 'separator' },
@@ -132,24 +140,27 @@ ipcMain.handle('save-file', async (_event, filePath: string, content: string) =>
 ipcMain.handle('get-folder', () => currentFolder)
 
 ipcMain.on('create-terminal', (event) => {
-  const shellPath = process.platform === 'win32' ? 'cmd.exe' : (process.env.SHELL || '/bin/bash')
-  shell = spawn(shellPath, [], { shell: true })
-
-  shell.stdout.on('data', (data) => {
-    event.sender.send('terminal-data', data.toString())
+  const shellPath = process.platform === 'win32' ? 'powershell.exe' : process.env.SHELL || '/bin/zsh'
+  
+  ptyProcess = pty.spawn(shellPath, [], {
+    name: 'xterm-256color',
+    cols: 80,
+    rows: 30,
+    cwd: process.env.HOME || process.cwd(),
+    env: process.env as { [key: string]: string }
   })
 
-  shell.stderr.on('data', (data) => {
-    event.sender.send('terminal-data', data.toString())
+  ptyProcess.onData((data: string) => {
+    event.sender.send('terminal-data', data)
   })
 
-  shell.on('close', () => {
-    shell = null
+  ptyProcess.onExit(() => {
+    ptyProcess = null
   })
 })
 
 ipcMain.on('terminal-input', (_event, data: string) => {
-  if (shell?.stdin) {
-    shell.stdin.write(data)
+  if (ptyProcess) {
+    ptyProcess.write(data)
   }
 })

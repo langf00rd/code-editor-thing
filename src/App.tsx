@@ -31,7 +31,7 @@ const THEMES = [
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(true)
-  const [terminalVisible, setTerminalVisible] = useState(true)
+  const [terminalVisible, setTerminalVisible] = useState(false)
   const [fileTree, setFileTree] = useState<FileItem[]>([])
   const [openFiles, setOpenFiles] = useState<OpenFile[]>([])
   const [activeFilePath, setActiveFilePath] = useState<string | null>(null)
@@ -39,27 +39,43 @@ function App() {
   const [selectedTheme, setSelectedTheme] = useState('vs-dark')
   const [isElectron, setIsElectron] = useState(false)
 
-  useEffect(() => {
-    setIsElectron(!!window.electronAPI)
+ useEffect(() => {
+  setIsElectron(!!window.electronAPI)
 
-    if (window.electronAPI) {
-      window.electronAPI.onFolderOpened(async (folderPath) => {
-        setCurrentFolder(folderPath)
-        const items = await window.electronAPI!.readDirectory(folderPath)
-        setFileTree(items.filter((item) => !item.name.startsWith('.')))
-      })
+  if (!window.electronAPI) return
 
-      window.electronAPI.onToggleSidebar(() => {
-        console.log('Toggle sidebar triggered')
-        setSidebarVisible((prev) => !prev)
-      })
+  // ---- Handlers ----
+  const handleFolderOpened = async (folderPath: string) => {
+    setCurrentFolder(folderPath)
 
-      window.electronAPI.onToggleTerminal(() => {
-        console.log('Toggle terminal triggered')
-        setTerminalVisible((prev) => !prev)
-      })
-    }
-  }, [])
+    const items = await window.electronAPI!.readDirectory(folderPath)
+    setFileTree(items.filter((item) => !item.name.startsWith('.')))
+  }
+
+  const handleToggleSidebar = () => {
+    console.log('Toggled sidebar triggered')
+    setSidebarVisible(prev => !prev)
+  }
+
+  const handleToggleTerminal = () => {
+    console.log('Toggled terminal triggered')
+    setTerminalVisible(prev => !prev)
+  }
+
+  // ---- Register listeners ----
+  window.electronAPI.onFolderOpened(handleFolderOpened)
+  window.electronAPI.onToggleSidebar(handleToggleSidebar)
+  window.electronAPI.onToggleTerminal(handleToggleTerminal)
+
+  // ---- Cleanup (VERY important) ----
+  return () => {
+    window.electronAPI.removeFolderOpened?.(handleFolderOpened)
+    window.electronAPI.removeToggleSidebar?.(handleToggleSidebar)
+    window.electronAPI.removeToggleTerminal?.(handleToggleTerminal)
+  }
+}, [])
+
+ 
 
   const handleFileSelect = useCallback(async (item: FileItem) => {
     if (item.isDirectory) return
@@ -158,7 +174,7 @@ function App() {
         onCloseTab={handleCloseTab}
         onContentChange={handleContentChange}
       />
-      <Terminal />
+      {terminalVisible && <Terminal />}
       </div>
       {/* 
       <ThemeSelector
