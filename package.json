@@ -4,13 +4,16 @@
   "private": true,
   "main": "dist-electron/main.cjs",
   "type": "module",
+  "author": "Code Editor",
+  "description": "A code editor built with Electron",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "build:electron": "node build-electron.mjs",
     "preview": "vite preview",
     "electron:dev": "npm run build:electron && node start-electron.cjs",
-    "electron:build": "vite build && npm run build:electron && electron-builder"
+    "electron:build": "vite build && npm run build:electron && electron-builder",
+    "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.1",
@@ -40,7 +43,6 @@
     "vite-plugin-electron-renderer": "^0.14.6"
   },
   "devDependencies": {
-    "@electron/rebuild": "^4.0.3",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
@@ -61,10 +63,17 @@
     "directories": {
       "output": "dist-electron"
     },
+    "mac": {
+      "target": "dmg"
+    },
     "files": [
       "dist/**/*",
-      "node_modules/**/*",
+      "dist-electron/**/*",
       "package.json"
-    ]
+    ],
+    "asarUnpack": [
+      "node_modules/node-pty/**/*"
+    ],
+    "npmRebuild": false
   }
 }
