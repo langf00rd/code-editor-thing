@@ -1,15 +1,8 @@
 import MonacoEditor from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { OpenFile } from "../App";
-
-interface EditorProps {
-  openFiles: OpenFile[];
-  activeFilePath: string | null;
-  onTabClick: (path: string) => void;
-  onCloseTab: (path: string) => void;
-  onContentChange: (content: string) => void;
-}
+import { useEditor } from "../lib/editor-context";
+import type { OpenFile, OpenFilesListProps } from "../lib/types";
 
 function getLanguageFromPath(path: string): string {
   const ext = path.split(".").pop()?.toLowerCase();
@@ -33,9 +26,15 @@ function getLanguageFromPath(path: string): string {
   }
 }
 
-export default function Editor(props: EditorProps) {
-  const { openFiles, activeFilePath, onTabClick, onCloseTab, onContentChange } =
-    props;
+export default function Editor() {
+  const {
+    openFiles,
+    activeFilePath,
+    setActiveFilePath,
+    handleCloseTab,
+    handleContentChange,
+    selectedTheme,
+  } = useEditor();
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const [activeFile, setActiveFile] = useState<OpenFile | null>(null);
 
@@ -59,10 +58,10 @@ export default function Editor(props: EditorProps) {
   const handleChange = useCallback(
     (value: string | undefined) => {
       if (value !== undefined) {
-        onContentChange(value);
+        handleContentChange(value);
       }
     },
-    [onContentChange],
+    [handleContentChange],
   );
 
   if (!activeFile) {
@@ -75,14 +74,19 @@ export default function Editor(props: EditorProps) {
 
   return (
     <div className="w-[calc(100vw-240px)] h-screen">
-      <OpenFilesList {...props} />
+      <OpenFilesList
+        openFiles={openFiles}
+        activeFilePath={activeFilePath}
+        onTabClick={setActiveFilePath}
+        onCloseTab={handleCloseTab}
+      />
       <MonacoEditor
         className="w-[100%]"
         language={language}
+        theme={selectedTheme}
         value={activeFile.content}
         onChange={handleChange}
         onMount={handleEditorMount}
-        // theme="vs-dark"
         options={{
           fontSize: 12,
           minimap: { enabled: false },
@@ -95,9 +99,12 @@ export default function Editor(props: EditorProps) {
       />
     </div>
   );
+}
 
+function OpenFilesList(props: OpenFilesListProps) {
+  const { openFiles, activeFilePath, onTabClick, onCloseTab } = props;
   return (
-    <div className="bg-blue-200 p-1 h-screen">
+    <>
       {openFiles.length > 0 && (
         <div className="flex h-[32px] border-b">
           {openFiles.map((file) => (
@@ -117,48 +124,6 @@ export default function Editor(props: EditorProps) {
                 onClick={(e) => {
                   e.stopPropagation();
                   onCloseTab(file.path);
-                }}
-              >
-                ×
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/*{openFiles.length === 0 ? (
-        <div className="text-center py-32">
-          Open a folder (File → Open Folder or Ctrl+O)
-        </div>
-      ) : activeFile ? (
-
-      ) : null}*/}
-    </div>
-  );
-}
-
-function OpenFilesList(props: EditorProps) {
-  return (
-    <>
-      {props.openFiles.length > 0 && (
-        <div className="flex h-[32px] border-b">
-          {props.openFiles.map((file) => (
-            <div
-              key={file.path}
-              className={`flex items-center gap-2 px-3 cursor-pointer ${
-                file.path === props.activeFilePath ? "bg-neutral-200" : ""
-              } hover:bg-neutral-300`}
-              onClick={() => props.onTabClick(file.path)}
-            >
-              <p className="whitespace-nowrap text-[12px]">
-                {file.name}
-                {file.modified && <span className="text-[#569cd6]"> ●</span>}
-              </p>
-              <span
-                className="opacity-60 hover:opacity-100"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  props.onCloseTab(file.path);
                 }}
               >
                 ×

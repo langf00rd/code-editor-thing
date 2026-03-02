@@ -1,35 +1,28 @@
-import { THEMES } from "@/lib/themes";
 import { useState } from "react";
-import type { FileItem } from "../../electron/preload";
+import { useEditor } from "../lib/editor-context";
+import { THEMES } from "../lib/themes";
 import ThemeSelector from "./theme-selector";
+import type { FileItem } from "../../electron/preload";
 
 interface TreeItemProps {
   item: FileItem;
   level: number;
-  onFileSelect: (item: FileItem) => void;
-  onRefresh: (folderPath: string) => void;
-  currentFolder: string;
 }
 
-function TreeItem({
-  item,
-  level,
-  onFileSelect,
-  onRefresh,
-  currentFolder,
-}: TreeItemProps) {
+function TreeItem({ item, level }: TreeItemProps) {
   const [expanded, setExpanded] = useState(false);
   const [children, setChildren] = useState<FileItem[]>([]);
+  const { handleFileSelect } = useEditor();
 
   const handleClick = async () => {
     if (item.isDirectory) {
       if (!expanded) {
         const items = await window.electronAPI.readDirectory(item.path);
-        setChildren(items.filter((i) => !i.name.startsWith(".")));
+        setChildren(items.filter((i: FileItem) => !i.name.startsWith(".")));
       }
       setExpanded(!expanded);
     } else {
-      onFileSelect(item);
+      handleFileSelect(item);
     }
   };
 
@@ -50,14 +43,7 @@ function TreeItem({
       {expanded && item.isDirectory && (
         <>
           {children.map((child) => (
-            <TreeItem
-              key={child.path}
-              item={child}
-              level={level + 1}
-              onFileSelect={onFileSelect}
-              onRefresh={onRefresh}
-              currentFolder={currentFolder}
-            />
+            <TreeItem key={child.path} item={child} level={level + 1} />
           ))}
         </>
       )}
@@ -65,27 +51,13 @@ function TreeItem({
   );
 }
 
-interface SidebarProps {
-  fileTree: FileItem[];
-  onFileSelect: (item: FileItem) => void;
-  onRefresh: (folderPath: string) => void;
-  currentFolder: string | null;
-}
+export default function Sidebar() {
+  const { fileTree, selectedTheme, setSelectedTheme } = useEditor();
 
-export default function Sidebar(props: SidebarProps) {
-  const { fileTree, onFileSelect, onRefresh, currentFolder } = props;
-  const [selectedTheme, setSelectedTheme] = useState("vs-dark");
   return (
     <div className="h-full p-1 py-2 bg-neutral-100 border-r w-[240px]">
       {fileTree.map((item) => (
-        <TreeItem
-          key={item.path}
-          item={item}
-          level={0}
-          onFileSelect={onFileSelect}
-          onRefresh={onRefresh}
-          currentFolder={currentFolder}
-        />
+        <TreeItem key={item.path} item={item} level={0} />
       ))}
       <div className="h-6 border-t">
         <ThemeSelector
