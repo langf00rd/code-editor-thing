@@ -43,6 +43,7 @@
     "vite-plugin-electron-renderer": "^0.14.6"
   },
   "devDependencies": {
+    "@types/prismjs": "^1.26.6",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",

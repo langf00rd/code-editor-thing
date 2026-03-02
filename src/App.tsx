@@ -1,11 +1,13 @@
 import { useEffect } from "react";
 import Editor from "./components/editor";
-import Sidebar from "./components/sidebar";
+import Sidebar from "./components/Sidebar";
 import Terminal from "./components/Terminal";
+import ThemeSelector from "./components/theme-selector";
 import { EditorProvider, useEditor } from "./lib/editor-context";
 
 function EditorApp() {
-  const { isElectron, handleSave, sidebarVisible, terminalVisible } = useEditor();
+  const { isElectron, handleSave, sidebarVisible, terminalVisible } =
+    useEditor();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -39,6 +41,10 @@ function EditorApp() {
         <Editor />
         {terminalVisible && <Terminal />}
       </div>
+      <div className="h-7 px-2 fixed flex items-center justify-between bottom-0 w-full bg-white left-0 border-t">
+        <div />
+        <ThemeSector />
+div>
     </div>
   );
 }

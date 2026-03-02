@@ -68,9 +68,12 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     window.electronAPI.onToggleTerminal(handleToggleTerminal);
 
     return () => {
-      window.electronAPI.removeFolderOpened?.(handleFolderOpened);
-      window.electronAPI.removeToggleSidebar?.(handleToggleSidebar);
-      window.electronAPI.removeToggleTerminal?.(handleToggleTerminal);
+      const api = window.electronAPI;
+      if (api) {
+        api.removeFolderOpened?.(handleFolderOpened);
+        api.removeToggleSidebar?.(handleToggleSidebar);
+        api.removeToggleTerminal?.(handleToggleTerminal);
+      }
     };
   }, []);
 
