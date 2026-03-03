@@ -49,6 +49,24 @@ export interface ThemeConfig {
     bg: string;
     fg: string;
   };
+  syntax: {
+    keyword: string;
+    string: string;
+    comment: string;
+    number: string;
+    function: string;
+    operator: string;
+    variable: string;
+    type: string;
+    property: string;
+    bracket: string;
+    tag: string;
+    attribute: string;
+    heading: string;
+    emphasis: string;
+    strong: string;
+    link: string;
+  };
 }
 
 export interface EditorContextType {

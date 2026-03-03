@@ -6,6 +6,8 @@ import { markdown } from "@codemirror/lang-markdown";
 import { python } from "@codemirror/lang-python";
 import { rust } from "@codemirror/lang-rust";
 import { EditorView } from "codemirror";
+import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
+import { tags as t } from "@lezer/highlight";
 
 export function getLanguageExtension(filename: string) {
   const ext = filename.split(".").pop()?.toLowerCase();
@@ -77,4 +79,52 @@ export function createThemeExtension(bg: string, fg: string) {
       borderLeftColor: fg,
     },
   });
+}
+
+export function createSyntaxHighlighting(syntax: {
+  keyword: string;
+  string: string;
+  comment: string;
+  number: string;
+  function: string;
+  operator: string;
+  variable: string;
+  type: string;
+  property: string;
+  bracket: string;
+  tag: string;
+  attribute: string;
+  heading: string;
+  emphasis: string;
+  strong: string;
+  link: string;
+}) {
+  return syntaxHighlighting(
+    HighlightStyle.define([
+      { tag: t.keyword, color: syntax.keyword },
+      { tag: t.string, color: syntax.string },
+      { tag: t.comment, color: syntax.comment, fontStyle: "italic" },
+      { tag: t.number, color: syntax.number },
+      { tag: t.function(t.variableName), color: syntax.function },
+      { tag: t.operator, color: syntax.operator },
+      { tag: t.variableName, color: syntax.variable },
+      { tag: t.typeName, color: syntax.type },
+      { tag: t.propertyName, color: syntax.property },
+      { tag: t.bracket, color: syntax.bracket },
+      { tag: t.tagName, color: syntax.tag },
+      { tag: t.attributeName, color: syntax.attribute },
+      { tag: t.heading, color: syntax.heading, fontWeight: "bold" },
+      { tag: t.emphasis, color: syntax.emphasis, fontStyle: "italic" },
+      { tag: t.strong, color: syntax.strong, fontWeight: "bold" },
+      { tag: t.link, color: syntax.link, textDecoration: "underline" },
+      { tag: t.bool, color: syntax.number },
+      { tag: t.null, color: syntax.number },
+      { tag: t.regexp, color: syntax.string },
+      { tag: t.escape, color: syntax.number },
+      { tag: t.className, color: syntax.type },
+      { tag: t.definition(t.variableName), color: syntax.function },
+      { tag: t.self, color: syntax.keyword },
+      { tag: t.namespace, color: syntax.property },
+    ])
+  );
 }

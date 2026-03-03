@@ -1,4 +1,4 @@
-import { createThemeExtension, getLanguageExtension } from "@/lib/utils";
+import { createSyntaxHighlighting, createThemeExtension, getLanguageExtension } from "@/lib/utils";
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 import { EditorState } from "@codemirror/state";
 import { keymap } from "@codemirror/view";
@@ -29,6 +29,7 @@ export default function Editor() {
       history(),
       keymap.of([...defaultKeymap, ...historyKeymap]),
       createThemeExtension(currentTheme.editor.bg, currentTheme.editor.fg),
+      createSyntaxHighlighting(currentTheme.syntax),
       EditorView.updateListener.of((update) => {
         if (update.docChanged) {
           handleContentChange(update.state.doc.toString());
