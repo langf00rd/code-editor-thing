@@ -6,14 +6,20 @@ export default function InfoBar() {
 
   return (
     <div
-      className="h-[28px] px-2 fixed flex items-center justify-between bottom-0 w-full left-0"
+      className="h-[28px] w-full"
       style={{
-        backgroundColor: currentTheme.statusbar.bg,
-        color: currentTheme.statusbar.fg,
+        backgroundColor: currentTheme.body?.bg,
       }}
     >
-      <div />
-      <ThemeSelector />
+      <div
+        className="w-full px-2 text-[11px] h-full rounded-md flex items-center justify-between"
+        style={{
+          backgroundColor: currentTheme.statusbar.bg,
+          color: currentTheme.statusbar.fg,
+        }}
+      >
+        <ThemeSelector />
+      </div>
     </div>
   );
 }

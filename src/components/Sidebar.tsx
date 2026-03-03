@@ -2,6 +2,7 @@ import { ChevronDown, ChevronUp, FolderClosed, FolderOpen } from "lucide-react";
 import { useState } from "react";
 import type { FileItem } from "../../electron/preload";
 import { useEditor } from "../lib/editor-context";
+import InfoBar from "./info-bar";
 
 interface TreeItemProps {
   item: FileItem;
@@ -40,17 +41,17 @@ function TreeItem({ item, level }: TreeItemProps) {
         }}
         onClick={handleClick}
       >
-        <span className="mr-2">
+        <span className="mr-1">
           {item.isDirectory ? (
             expanded ? (
-              <span className="flex items-center gap-2">
-                <ChevronUp size={14} className="opacity-30" />
-                <FolderOpen size={14} className="opacity-30" />
+              <span className="flex items-center gap-1">
+                <ChevronUp size={14} className="opacity-55" />
+                <FolderOpen size={14} className="opacity-55" />
               </span>
             ) : (
-              <span className="flex items-center gap-2">
-                <ChevronDown size={14} className="opacity-30" />
-                <FolderClosed size={14} className="opacity-30" />
+              <span className="flex items-center gap-1">
+                <ChevronDown size={14} className="opacity-55" />
+                <FolderClosed size={14} className="opacity-55" />
               </span>
             )
           ) : (
@@ -74,18 +75,21 @@ export default function Sidebar() {
   const { fileTree, currentTheme } = useEditor();
 
   return (
-    <div className="py-2 pl-2">
-      <section
-        className="h-full rounded-xl p-1 py-2 min-w-[260px] overflow-x-scroll"
-        style={{
-          backgroundColor: currentTheme.sidebar.bg,
-          color: currentTheme.sidebar.fg,
-        }}
-      >
-        {fileTree.map((item) => (
-          <TreeItem key={item.path} item={item} level={0} />
-        ))}
-      </section>
+    <div className="relative space-y-2 py-2 pl-2">
+      <div className="h-[calc(100%-38px)]">
+        <section
+          className="h-full rounded-xl p-1 py-2 min-w-[260px] overflow-x-scroll"
+          style={{
+            backgroundColor: currentTheme.sidebar.bg,
+            color: currentTheme.sidebar.fg,
+          }}
+        >
+          {fileTree.map((item) => (
+            <TreeItem key={item.path} item={item} level={0} />
+          ))}
+        </section>
+      </div>
+      <InfoBar />
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import Editor from "./components/editor";
-import InfoBar from "./components/info-bar";
 import Sidebar from "./components/sidebar";
 import Terminal from "./components/Terminal";
 import { EditorProvider, useEditor } from "./lib/editor-context";
@@ -52,7 +51,6 @@ function EditorApp() {
         <Editor />
         {terminalVisible && <Terminal />}
       </div>
-      <InfoBar />
     </div>
   );
 }

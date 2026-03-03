@@ -9,7 +9,7 @@ export const THEMES: ThemeConfig[] = [
     name: "Light",
     editor: { bg: "#fff", fg: "#000000", fontFamily: CODE_FONT },
     sidebar: { bg: "#fff", fg: "#000000" },
-    body: { bg: "rgb(229 229 229 / 0.3)", fg: "#000000" },
+    body: { bg: "#f3f3f3", fg: "#000000" },
     openFilePill: { bg: "#fff", fg: "#8a8a8a" },
     statusbar: { bg: "#fff", fg: "#000" },
   },

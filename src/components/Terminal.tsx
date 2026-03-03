@@ -42,14 +42,6 @@ export default function Terminal() {
         window.electronAPI.terminalInput(data)
       }
     })
-
-    
-    // const handleResize = () => fitAddon.fit()
-    // window.addEventListener('resize', handleResize)
-    // return () => {
-    //   window.removeEventListener('resize', handleResize)
-    //   term.dispose()
-    // }
   }, [])
 
   return (
