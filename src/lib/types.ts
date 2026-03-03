@@ -1,3 +1,5 @@
+import { FileItem } from "electron/preload";
+
 export interface OpenFile {
   path: string;
   name: string;
@@ -47,4 +49,28 @@ export interface ThemeConfig {
     bg: string;
     fg: string;
   };
+}
+
+export interface EditorContextType {
+  sidebarVisible: boolean;
+  setSidebarVisible: (v: boolean) => void;
+  terminalVisible: boolean;
+  setTerminalVisible: (v: boolean) => void;
+  fileTree: FileItem[];
+  setFileTree: (v: FileItem[]) => void;
+  openFiles: OpenFile[];
+  setOpenFiles: (v: OpenFile[]) => void;
+  activeFilePath: string | null;
+  setActiveFilePath: (v: string | null) => void;
+  currentFolder: string | null;
+  setCurrentFolder: (v: string | null) => void;
+  selectedTheme: string;
+  setSelectedTheme: (v: string) => void;
+  currentTheme: ThemeConfig;
+  isElectron: boolean;
+  handleFileSelect: (item: FileItem) => Promise<void>;
+  handleContentChange: (content: string) => void;
+  handleSave: () => Promise<void>;
+  handleCloseTab: (path: string) => void;
+  handleRefreshTree: (folderPath: string) => Promise<void>;
 }

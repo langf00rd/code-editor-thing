@@ -1,17 +1,10 @@
 import { useEffect } from "react";
 import Editor from "./components/editor";
 import Sidebar from "./components/sidebar";
-import Terminal from "./components/Terminal";
 import { EditorProvider, useEditor } from "./lib/editor-context";
 
 function EditorApp() {
-  const {
-    isElectron,
-    handleSave,
-    currentTheme,
-    sidebarVisible,
-    terminalVisible,
-  } = useEditor();
+  const { isElectron, handleSave, currentTheme, sidebarVisible } = useEditor();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -49,7 +42,7 @@ function EditorApp() {
       {sidebarVisible && <Sidebar />}
       <div className="h-full flex flex-col">
         <Editor />
-        {terminalVisible && <Terminal />}
+        {/*{terminalVisible && <Terminal />}*/}
       </div>
     </div>
   );

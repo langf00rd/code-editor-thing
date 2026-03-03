@@ -4,12 +4,8 @@ import type { FileItem } from "../../electron/preload";
 import { useEditor } from "../lib/editor-context";
 import InfoBar from "./info-bar";
 
-interface TreeItemProps {
-  item: FileItem;
-  level: number;
-}
-
-function TreeItem({ item, level }: TreeItemProps) {
+function TreeItem(props: { item: FileItem; level: number }) {
+  const { item, level } = props;
   const [expanded, setExpanded] = useState(false);
   const [children, setChildren] = useState<FileItem[]>([]);
   const { handleFileSelect, currentTheme } = useEditor();

@@ -9,31 +9,7 @@ import {
 } from "react";
 import type { FileItem } from "../../electron/preload";
 import { getTheme } from "./themes";
-import type { OpenFile, ThemeConfig } from "./types";
-
-interface EditorContextType {
-  sidebarVisible: boolean;
-  setSidebarVisible: (v: boolean) => void;
-  terminalVisible: boolean;
-  setTerminalVisible: (v: boolean) => void;
-  fileTree: FileItem[];
-  setFileTree: (v: FileItem[]) => void;
-  openFiles: OpenFile[];
-  setOpenFiles: (v: OpenFile[]) => void;
-  activeFilePath: string | null;
-  setActiveFilePath: (v: string | null) => void;
-  currentFolder: string | null;
-  setCurrentFolder: (v: string | null) => void;
-  selectedTheme: string;
-  setSelectedTheme: (v: string) => void;
-  currentTheme: ThemeConfig;
-  isElectron: boolean;
-  handleFileSelect: (item: FileItem) => Promise<void>;
-  handleContentChange: (content: string) => void;
-  handleSave: () => Promise<void>;
-  handleCloseTab: (path: string) => void;
-  handleRefreshTree: (folderPath: string) => Promise<void>;
-}
+import type { EditorContextType, OpenFile } from "./types";
 
 const EditorContext = createContext<EditorContextType | null>(null);
 
