@@ -1,10 +1,10 @@
 {
-  "name": "code-editor",
+  "name": "code-editor-thing",
   "version": "1.0.0",
   "private": true,
   "main": "dist-electron/main.cjs",
   "type": "module",
-  "author": "Code Editor",
+  "author": "Code Editor Thing",
   "description": "A code editor built with Electron",
   "scripts": {
     "dev": "vite",
@@ -63,8 +63,8 @@
     "wait-on": "^8.0.1"
   },
   "build": {
-    "appId": "com.code-editor.app",
-    "productName": "Code Editor",
+    "appId": "com.codeeditorthing.app",
+    "productName": "Code Editor Thing",
     "directories": {
       "output": "dist-electron"
     },
