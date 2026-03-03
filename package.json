@@ -74,12 +74,13 @@
     },
     "files": [
       "dist/**/*",
-      "dist-electron/**/*",
-      "package.json"
+      "dist-electron/main.cjs",
+      "dist-electron/preload.cjs"
     ],
-    "asarUnpack": [
-      "node_modules/node-pty/**/*"
-    ],
+    "extraMetadata": {
+      "main": "dist-electron/main.cjs"
+    },
+    "asar": true,
     "npmRebuild": false
   }
 }
