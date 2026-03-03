@@ -274,7 +274,7 @@ export default function Editor() {
   }
 
   return (
-    <div className="w-[calc(100vw-240px)] space-y-2 py-2 pr-2 h-screen flex flex-col">
+    <div className="w-[calc(100vw-240px)] space-y-2 py-2 pr-2 h-[calc(100vh-21px)] flex flex-col">
       <OpenFilesList
         openFiles={openFiles}
         activeFilePath={activeFilePath}
@@ -285,7 +285,7 @@ export default function Editor() {
       <div className="relative flex-1 overflow-hidden">
         <div
           ref={highlightRef}
-          className="absolute inset-0 p-4 whitespace-pre-wrap text-[12px] rounded-xl leading-[2] break-words overflow-auto pointer-events-none"
+          className="absolute inset-0 p-4 whitespace-pre-wrap text-[12px] rounded-tl-2xl leading-[2] break-words overflow-auto pointer-events-none"
           dangerouslySetInnerHTML={{ __html: highlighted || "&nbsp;" }}
           style={{
             backgroundColor: themeStyle.bg,

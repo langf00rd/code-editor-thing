@@ -40,17 +40,17 @@ function TreeItem({ item, level }: TreeItemProps) {
         }}
         onClick={handleClick}
       >
-        <span className="mr-1">
+        <span className="mr-3">
           {item.isDirectory ? (
             expanded ? (
-              <span className="flex items-center gap-1">
-                <ChevronUp size={14} className="text-neutral-400" />
-                <FolderOpen size={14} className="text-neutral-400" />
+              <span className="flex items-center gap-2">
+                <ChevronUp size={14} className="opacity-30" />
+                <FolderOpen size={14} className="opacity-30" />
               </span>
             ) : (
-              <span className="flex items-center gap-1">
-                <ChevronDown size={14} className="text-neutral-400" />
-                <FolderClosed size={14} className="text-neutral-400" />
+              <span className="flex items-center gap-2">
+                <ChevronDown size={14} className="opacity-30" />
+                <FolderClosed size={14} className="opacity-30" />
               </span>
             )
           ) : (
