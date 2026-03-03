@@ -8,8 +8,8 @@ import {
   type ReactNode,
 } from "react";
 import type { FileItem } from "../../electron/preload";
-import type { OpenFile } from "./types";
-import { getTheme, type Theme } from "./themes";
+import { getTheme } from "./themes";
+import type { OpenFile, ThemeConfig } from "./types";
 
 interface EditorContextType {
   sidebarVisible: boolean;
@@ -26,7 +26,7 @@ interface EditorContextType {
   setCurrentFolder: (v: string | null) => void;
   selectedTheme: string;
   setSelectedTheme: (v: string) => void;
-  currentTheme: Theme;
+  currentTheme: ThemeConfig;
   isElectron: boolean;
   handleFileSelect: (item: FileItem) => Promise<void>;
   handleContentChange: (content: string) => void;
@@ -44,7 +44,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const [openFiles, setOpenFiles] = useState<OpenFile[]>([]);
   const [activeFilePath, setActiveFilePath] = useState<string | null>(null);
   const [currentFolder, setCurrentFolder] = useState<string | null>(null);
-  const [selectedTheme, setSelectedTheme] = useState("vs-dark");
+  const [selectedTheme, setSelectedTheme] = useState("light");
   const [isElectron, setIsElectron] = useState(false);
 
   const currentTheme = useMemo(() => getTheme(selectedTheme), [selectedTheme]);

@@ -1,3 +1,4 @@
+import { ChevronDown, ChevronUp, FolderClosed, FolderOpen } from "lucide-react";
 import { useState } from "react";
 import type { FileItem } from "../../electron/preload";
 import { useEditor } from "../lib/editor-context";
@@ -40,9 +41,23 @@ function TreeItem({ item, level }: TreeItemProps) {
         onClick={handleClick}
       >
         <span className="mr-1">
-          {item.isDirectory ? (expanded ? "-" : "+") : ""}
+          {item.isDirectory ? (
+            expanded ? (
+              <span className="flex items-center gap-1">
+                <ChevronUp size={14} className="text-neutral-400" />
+                <FolderOpen size={14} className="text-neutral-400" />
+              </span>
+            ) : (
+              <span className="flex items-center gap-1">
+                <ChevronDown size={14} className="text-neutral-400" />
+                <FolderClosed size={14} className="text-neutral-400" />
+              </span>
+            )
+          ) : (
+            ""
+          )}
         </span>
-        <span className="whitespace-nowrap">{item.name}</span>
+        <p className="whitespace-nowrap select-none">{item.name}</p>
       </div>
       {expanded && item.isDirectory && (
         <>
@@ -59,16 +74,18 @@ export default function Sidebar() {
   const { fileTree, currentTheme } = useEditor();
 
   return (
-    <div
-      className="h-full relative p-1 py-2 w-[240px]"
-      style={{
-        backgroundColor: currentTheme.sidebar.bg,
-        color: currentTheme.sidebar.fg,
-      }}
-    >
-      {fileTree.map((item) => (
-        <TreeItem key={item.path} item={item} level={0} />
-      ))}
+    <div className="py-2 pl-2">
+      <section
+        className="h-full rounded-xl p-1 py-2 min-w-[260px] overflow-x-scroll"
+        style={{
+          backgroundColor: currentTheme.sidebar.bg,
+          color: currentTheme.sidebar.fg,
+        }}
+      >
+        {fileTree.map((item) => (
+          <TreeItem key={item.path} item={item} level={0} />
+        ))}
+      </section>
     </div>
   );
 }

@@ -22,3 +22,29 @@ export interface OpenFilesListProps {
   onTabClick: (path: string) => void;
   onCloseTab: (path: string) => void;
 }
+
+export interface ThemeConfig {
+  id: string;
+  name: string;
+  editor: {
+    bg: string;
+    fg: string;
+    fontFamily?: string;
+  };
+  sidebar: {
+    bg: string;
+    fg: string;
+  };
+  statusbar: {
+    bg: string;
+    fg: string;
+  };
+  body?: {
+    bg: string;
+    fg: string;
+  };
+  openFilePill?: {
+    bg: string;
+    fg: string;
+  };
+}

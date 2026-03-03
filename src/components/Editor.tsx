@@ -1,3 +1,4 @@
+import { XIcon } from "lucide-react";
 import Prism from "prismjs";
 import "prismjs/components/prism-c";
 import "prismjs/components/prism-css";
@@ -10,13 +11,14 @@ import "prismjs/components/prism-rust";
 import "prismjs/components/prism-typescript";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useEditor } from "../lib/editor-context";
-import type { OpenFile } from "../lib/types";
+import type { OpenFile, ThemeConfig } from "../lib/types";
 
 interface OpenFilesListProps {
   openFiles: OpenFile[];
   activeFilePath: string | null;
   onTabClick: (path: string) => void;
   onCloseTab: (path: string) => void;
+  currentTheme: ThemeConfig;
 }
 
 function OpenFilesList({
@@ -24,18 +26,24 @@ function OpenFilesList({
   activeFilePath,
   onTabClick,
   onCloseTab,
+  currentTheme,
 }: OpenFilesListProps) {
   return (
     <>
       {openFiles.length > 0 && (
-        <div className="flex h-[32px] border-b">
+        <div className="flex gap-2 h-[25px]">
           {openFiles.map((file) => (
             <div
-              key={file.path}
-              className={`flex items-center gap-2 px-3 cursor-pointer ${
-                file.path === activeFilePath ? "bg-neutral-200" : ""
-              } hover:bg-neutral-300`}
               onClick={() => onTabClick(file.path)}
+              key={file.path}
+              className={`flex items-center gap-2 text-[12px] rounded-md px-3 cursor-pointer hover:opacity-50`}
+              style={{
+                backgroundColor:
+                  file.path === activeFilePath
+                    ? "var(--colors-transparent)"
+                    : currentTheme.openFilePill?.bg,
+                color: currentTheme.openFilePill?.fg,
+              }}
             >
               <p className="whitespace-nowrap">
                 {file.name}
@@ -48,7 +56,7 @@ function OpenFilesList({
                   onCloseTab(file.path);
                 }}
               >
-                ×
+                <XIcon size={12} />
               </span>
             </div>
           ))}
@@ -199,7 +207,7 @@ export default function Editor() {
   }, [currentTheme]);
 
   const colors = useMemo(() => {
-    return THEME_COLORS[currentTheme.id] || THEME_COLORS["vs-dark"];
+    return THEME_COLORS[currentTheme.id] || THEME_COLORS["light"];
   }, [currentTheme.id]);
 
   const highlighted = useMemo(() => {
@@ -266,30 +274,31 @@ export default function Editor() {
   }
 
   return (
-    <div className="w-[calc(100vw-240px)] h-screen flex flex-col">
+    <div className="w-[calc(100vw-240px)] space-y-2 py-2 pr-2 h-screen flex flex-col">
       <OpenFilesList
         openFiles={openFiles}
         activeFilePath={activeFilePath}
         onTabClick={setActiveFilePath}
         onCloseTab={handleCloseTab}
+        currentTheme={currentTheme}
       />
       <div className="relative flex-1 overflow-hidden">
         <div
           ref={highlightRef}
-          className="absolute inset-0 p-4 text-sm whitespace-pre-wrap text-[12px] break-words overflow-auto pointer-events-none"
+          className="absolute inset-0 p-4 whitespace-pre-wrap text-[12px] rounded-xl leading-[2] break-words overflow-auto pointer-events-none"
+          dangerouslySetInnerHTML={{ __html: highlighted || "&nbsp;" }}
           style={{
             backgroundColor: themeStyle.bg,
             color: themeStyle.fg,
             fontFamily: themeStyle.fontFamily,
           }}
-          dangerouslySetInnerHTML={{ __html: highlighted || "&nbsp;" }}
         />
         <textarea
           ref={textareaRef}
           value={content}
           onChange={handleChange}
           onScroll={handleScroll}
-          className="absolute inset-0 w-full h-full p-4 resize-none outline-none text-[12px] whitespace-pre-wrap break-words bg-transparent text-transparent caret-white"
+          className="absolute inset-0 w-full h-full p-4 resize-none outline-none text-[12px] rounded-xl leading-[2] whitespace-pre-wrap break-words bg-transparent text-transparent caret-white"
           style={{ fontFamily: themeStyle.fontFamily }}
           spellCheck={false}
         />
