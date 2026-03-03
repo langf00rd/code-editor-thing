@@ -120,16 +120,17 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
   const handleSave = useCallback(async () => {
     if (!activeFilePath || !window.electronAPI) return;
-    const file = openFiles.find((f) => f.path === activeFilePath);
-    if (!file) return;
-
-    await window.electronAPI.saveFile(activeFilePath, file.content);
-    setOpenFiles((prev) =>
-      prev.map((f) =>
-        f.path === activeFilePath ? { ...f, modified: false } : f,
-      ),
-    );
-  }, [activeFilePath, openFiles]);
+    setOpenFiles((prev) => {
+      const file = prev.find((f) => f.path === activeFilePath);
+      if (file) {
+        window.electronAPI!.saveFile(activeFilePath, file.content);
+        return prev.map((f) =>
+          f.path === activeFilePath ? { ...f, modified: false } : f,
+        );
+      }
+      return prev;
+    });
+  }, [activeFilePath]);
 
   const handleCloseTab = useCallback(
     (path: string) => {
