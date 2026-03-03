@@ -40,7 +40,7 @@ function TreeItem({ item, level }: TreeItemProps) {
         }}
         onClick={handleClick}
       >
-        <span className="mr-3">
+        <span className="mr-2">
           {item.isDirectory ? (
             expanded ? (
               <span className="flex items-center gap-2">
